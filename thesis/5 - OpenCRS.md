@@ -2,6 +2,7 @@
 
 ## Plan
 
+- Usecase
 - Characteristics
   - 32-bit architecture
   - C codebases
@@ -9,6 +10,8 @@
   - Input streams: arguments, `stdin`, and files
 - Architecture
   - Overall description of each module
+  - List of all modules
+  - Communication between modules
 
 ## Existent Content
 
