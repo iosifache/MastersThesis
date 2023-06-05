@@ -1,6 +1,8 @@
 # Dataset Module
 
-The first module of the cyber reasining system is the dataset one, whom purpose is the create and manage **datasets of vulnerable programs** that can be analyzed by the next modules. A further condition for the resulted binaries is that they should be **tagged** with information related to their vulnerabilities. This will help in computing the accuracy of the entire system, namely by comparing the vulnerabilities that are (correctly or incorrectly) detected by OpenCRS and the intended ones, as labeled in the initial datasets.
+The first module of the cyber reasining system is the **dataset** one. Its purpose is to create and manage **datasets of vulnerable programs** based on processed public test suites.
+
+A further condition for the resulted binaries is that they should be **tagged** with information related to their vulnerabilities. This will help in computing the accuracy of the entire system, namely by comparing the vulnerabilities that are (correctly or incorrectly) detected by OpenCRS and the intended ones, as labeled in the initial datasets.
 
 > **TODO**: Insert diagram here
 
@@ -23,24 +25,26 @@ During the testing of other modules, the need of having custom binaries increase
 These three datasets were linked as submodules in the `raw_testsuites` folder of the `dataset` repository [dataset.7]. For each of them, a separate class (named **parser**) is created in the `dataset.parsers` module. As it should inherit the `BaseParser` class, the class should implement the following abstract methods:
 
 - `_get_all_sources`: Parses the folder structure of the dataset in `raw_testsuites/<testsuite_id>`, and returns a list of `Source` objects. The latter contains information such as the full path of the source file, and the embedded CWEs.
-- `preprocess`: Having the `Source` objects already created, the method deals with preprocessing the sources with **`gcc`**. The resulted files are placed in the `sources` folder.
-- `_generate_gcc_command`: Based on the preprocessed sources in `sources`, uses `gcc` to compile the executables in `executables`. Further details are placed in a CSV file, `vulnerables.csv`, which has columns indicating the executable ID, the test suite it cames from, its CWEs, and a boolean indicating if it is built or not.
+- `preprocess`: Having the `Source` objects already created, the method deals with preprocessing the sources with **`gcc`**, eventually by considering custom preprocessing **flags**. The resulted files are placed in the `sources` folder.
+- `_generate_gcc_command`: Based on the preprocessed sources in `sources` and additional compilation flags, uses `gcc` to compile the executables in `executables`. Further details are placed in a CSV file, `vulnerables.csv`, which has columns indicating the executable ID, the test suite it cames from, its CWEs, and a boolean indicating if it is built or not.
 
 All `gcc`-related operations (both preprocessing and building) are executed in a **Docker container** having Ubuntu as operating system. This provides replicability of the building process, and isolation from the host operating system. We prefer to communicate with the container by leveraging volumes (for sharing files) and Docker API calls. This suited the scenario better than having a gRPC service because the module's code is on the same host with the build container and the communciation delays are minimized by avoiding to send large files (e.g. the sources and executables) over (a virtualized) network.
 
-When the build functionality is triggered from command-line interface or by calling the specific method from the Python library, a parsers manager is activated. It selects the required parsers, and calls the preprocessing and building methods. The results of the process can be queried by using other operation, in which `vulnerable.csv` is parsed again.
+When the build functionality is triggered from command-line interface or by calling the specific method from the Python library, a parsers manager is activated. It selects the required parsers, and calls the preprocessing and building methods. The results of the process, namely `Executable` objects, can be queried by using other operation, in which `vulnerable.csv` is parsed again.
 
 ## Testing
 
 All modules were set into an Ubuntu virtual machine, were we could verify their functionality separately and conjunctively, by aggregating them in OpenCRS.
 
-For the dataset module, we leveraged the CLI to build the test suites and query the dataset:
+For the dataset module, we leveraged the CLI to build the test suites (below the toy one is offered as an example) and query the dataset. Further details regarding the analysis of the results will be provided in the chapter "Assesment".
+
+> **TODO**: Add link to the mentioned chapter
 
 ```bash
-➜ poetry run dataset build --testsuite TOY_TEST_SUITE
+➜ opencrs-dataset build --testsuite TOY_TEST_SUITE
 Successfully built 5 executables.
 
-➜ poetry run dataset get
+➜ opencrs-dataset get
 The available executables are:
 
 ┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓

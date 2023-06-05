@@ -1,86 +1,139 @@
 # Attack Surface Approximation Module
 
-## Plan
+Besides the processes that are automated internally, the program should have ways of interfacing with the exterior, either the environment or the users. The most used communication streams are:
 
-- As a system
-  - Input data structures
-  - Output data structures
-- Detection of arguments usage with `argc` and `argv` tracing
-- Detection of `stdin` and files using calls to functions
-- Detection of arguments
-  - Creating arguments fuzzing dictionaries with `man` processing and pattern
-  - Arguments fuzzing with QBDI
-- Technologies
-  - Ghidra
-  - Docker
-  - QBDI
-- CLI
+- Standard input (`stdin`);
+- Arguments;
+- Files;
+- Network packets;
+- System and library calls;
+- Graphic user interface;
+- Interrupts;
+- Signals;
+- Shared memory;
+- Devices; and
+- Environment variables.
 
-## Existent Content
+If data is sent with bad intents, then these **input streams** are referred as **attack vectors**. They form the **attack surface**: the full interface of the executables with the exterior, which can be attacked by a malicious actor.
 
-A submodule of the \textbf{Vulnerability Detection Module}, \textbf{Attack Surface Approximation} \cite{surface_repo}: This submodule deals with the static analysis of the input binaries for discovering their attack surface, namely the input mechanism they use. It is helpful for activating the next modules in the pipeline of the CRS. We achieve this by using the API of a popular reverse engineering tool, namely NSA's Ghidra, and verifying some necessary condition for an executable to use a specific input stream. For instance, if the executable does not interact with the program's parameters (the \mintinline{text}{main()}'s arguments, \mintinline{text}{argc} and \mintinline{text}{argv}), then a fuzzer modifying some (inexistent) parameters is useless.
+OpenCRS should know the attack vectors before starting to find vulnerabilities in it. This observation consists the basis for the next module in OpenCRS's pipeline, namely the **attack surface approximation**. Having a binary as an input (eventually piped from the **dataset module**), it discoveres the attack vectors that can be leveraged by the next modules in the CRS.
 
-It is worth mentioning to be mentioned that the latter is required due to our goals. In comparison to the cyber reasoning systems proposed at Cyber Grand Challenge, which deal with an executable taking input only from network packets, our CRS is meant to discover vulnerabilities in all major input streams, \mintinline{text}{stdin} and arguments included.
+As seen before, the diversity in input streams is large. We considered only three of the most used ones in our proof of concept: **`stdin`**, **files**, and **arguments**.
 
-> Source: second report
+> **TODO**: Insert diagram here
 
-\subsection{Fuzzing Arguments}
+## Theoretical Considerations
 
-\subsubsection{Introduction}
+The paper [2] initially introduces the concept of **front line functions**, namely functions that are close to a source of input. [1] builds on this idea, and defines the concept of **direct entry point**: a method that contains a call to one of the speciifc input methods (e.g. `read` from `unistd.h`). Despite the papers presents theoretical concepts equivalent to the input streams mentions in this thesis, they don't provide any tool or method for detecting this input entrances in processes. Besides this, it should be mentioned that the papers approach this problem by analyzing the source code.
 
-Another topic that we addressed this semester is the arguments fuzzing. This is required for two different components of the cyber reasoning system architecture:
-\begin{itemize}
-    \item \textbf{Discovering the names and order of the arguments} in the attack surface discovery module; and
-    \item \textbf{Generating random arguments} to be passed directly as argument in the vulnerability discovery module.
-\end{itemize}
+On the other hand, this CRS module implies generating valid arguments that can be used in the later modules (i.e. in vulnerability detection via fuzzing). Papers such as [3][4][5] are proposing arguments detection, but by having deep knowledge about the analyzed software. They require either a grammar, a `getopt` option parsing call to intercept, or a man page to parse.
 
-Due to difficulties in choosing a technology, we only implemented the first sub-task.
+The single implementations that could be found were in AFL [6], AFL++ [7], and ManFuzzer [8]. The first two has the `argv_fuzzing` mode, which plugs the generated random bytes to the `argv` of the main function. The third mentioned software generates fuzzing sequences by inspecting the man page and the output of the program ran with `-h`, `-H`, and `--help`. The disadvantages here is that the AFL-based approach does not consider the common format of an argument (e.g. `-<letter_or_word>` or `--<letter_or_word>`). For the last one, there is an inherit risk that the program does not have a help page implemented or has hidden arguments (e.g. experimental ones).
 
-To detect that an argument (or a set of arguments) is used by the executable, the \textbf{dynamic approach} is recommended, as the static one could lead to false results due to shallow inspection of the control flow graph. On the other hand, by analyzing the program dynamically, the input makes the program execution flows on a different path, reaching different basic blocks (predictable sequences of instructions, seen as nodes in a CFG) and, eventually, calling different system API methods.
+## Architecture
 
-The goals of the first sub-task is essentially the extraction of coverage information that can be further used to differentiate between two executions of the same executable, but with different arguments. There are multiple dynamic binary analysis techniques that can be used to extract information of this kind: 
-\begin{itemize}
-    \item \textbf{Debugging}: By placing hardware or software breakpoints on each basic block or system call, a debugger can detect the execution flow. But being a tool for humans (programmers, vulnerability researchers, etc.), it is not properly optimized for automations in which no manual intervention is required. The performance cost came either from user - kernel spaces switches (when calling the \mintinline{text}{ptrace} API from the debugger process) or by a form of dynamic binary instrumentation, by rewriting the code with debugging-related calls or interrupts.
-    \item \textbf{Static instrumentation and execution}: This approach consists in lifting the program into a high-level abstraction language, insertion of instrumentation code and compilation. The newly created executable is then ran and can report coverage information for its execution. Being an alternative for compiler instrumentation, this approach can lead to unexpected behavior due to a lack of standardized technologies in this field of research.
-    \item \textbf{Dynamic binary instrumentation} (abbreviated DBI): A DBI instrument tries to solve the issues of a debugger. Taking QuarkslaB's engine, \textbf{QBDI} \cite{qbdi}, as an example (that is actually used in our implementation), it allows the injection of instrumentation code inside the binary, at runtime. The optimization is that the analysis tool and the analyzed program runs under the umbrella of the same process, reducing the friction.
-\end{itemize}
+The module's goal of detecting the input streams was divided into multiple tasks, which implies different technologies.
 
-From our tests, we concluded that the last technique applied in QBDI could be used, taking in consideration its \textbf{advantages}:
-\begin{itemize}
-    \item Efficiency: The slowdown is less than as in other techniques.
-    \item Compatibility: There are multiple APIs available: C, C++, Python and even JavaScript (when used with Frida).
-\end{itemize}
+### Indicators Discovery
 
-\subsubsection{Architecture. Implementation}
+The first task is to **statically analyze** the binary for evidence (named **indicators**) that a specific input stream is used. It should be notes that the presence of an indicator is suffient, but not mandatory. Despite the fact the program does not call `getenv` internally, we can't guarantee that the environment variables are not used altogether as the program may implement an exotic approach of parsing its own stack to retrieve that information.
+
+This analysis is helpful for activating features in the next modules of OpenCRS's pipeline. For instance, if the executable does not use its CLI arguments, then a fuzzer modifying some (inexistent) arguments is useless and will not led to meaningful results.
+
+We achieve this by using the API of a popular reverse engineering tool, namely NSA's **Ghidra**, and verifying some necessary condition for an executable to use a specific input stream.
+
+- For arguments: The `main` function of the executable is decompiled, and the resulted code parsed with AST. The tree is traversed to detect interactions of `main`'s source code with program's arguments, `argc` and `argv`.
+- For standard input and files: All function calls are extracted into a set, and compared repeatedly with multiple sets of function names, specific to each input stream (e.g. `("read", "fgetc", "fread")` for `stdin`). If there is an intersection between the two sets, then an input stream is used by the executable.
+
+### Generating Arguments Dictionaries
+
+Before detecting if some arguments are used by the binary, a list of possible arguments should be generated. We implemented three generation heuristics:
+
+- `generation`: Generates all the arguments respecting the Regex format `-[a-zA-Z0-9]`.
+- `binary_pattern_matching`: Searches for bytes sequences in binary's content that respects the Regex `\s-{1,2}[a-zA-Z0-9][a-zA-Z0-9_-]*` (matching, for example, ` -f` and ` --file`).
+- `man_parsing`: Firstly, it reads the `man` configuration files to detect folders where manuals reside;. In this locations, finds all gzip file, unarchives them, and match their content against the same Regex pattern as above. Optionally, the returned arguments list can be trimmed to a fixed number of elements, based on their occurance.
+
+### Arguments Fuzzing
+
+To detect that an argument (or a set of arguments) is used by the executable, the **dynamic approach** is preferred, as the static one could lead to false results due to shallow inspection of the control flow graph. On the other hand, by analyzing the program dynamically, the input makes the program execution flows on a different path, reaching different basic blocks (predictable sequences of instructions, seen as nodes in a CFG) and, eventually, calling different system API methods.
+
+The goals of the sub-task is essentially the extraction of coverage information that can be further used to differentiate between two executions of the same executable, but with different arguments. There are multiple dynamic binary analysis techniques that can be used to extract information of this kind:
+
+- **Debugging**: By placing hardware or software breakpoints on each basic block or system call, a debugger can detect the execution flow. But being a tool for humans (programmers, vulnerability researchers, etc.), it is not properly optimized for automations in which no manual intervention is required. The performance cost came either from user - kernel spaces switches (when calling the `ptrace` API from the debugger process) or by a form of dynamic binary instrumentation, by rewriting the code with debugging-related calls or interrupts.
+- **Static instrumentation and execution**: This approach consists in lifting the program into a high-level abstraction language, insertion of instrumentation code and compilation. The newly created executable is then ran and can report coverage information for its execution. Being an alternative for compiler instrumentation, this approach can lead to unexpected behavior due to a lack of standardized technologies in this field of research.
+- **Dynamic binary instrumentation** (abbreviated DBI): A DBI instrument tries to solve the issues of a debugger. Taking Quarkslab's engine, **QBDI**, as an example (that is actually used in our implementation), it allows the injection of instrumentation code inside the binary, at runtime. The optimization is that the analysis tool and the analyzed program runs under the umbrella of the same process, reducing the friction.
 
 The first approach for integrating QBDI consisted in the following steps:
-\begin{enumerate}
-    \item Transform the executable into a library by using the LIEF \cite{lief} Python library to remove the PIE flag (that is present in executables) and mark the \mintinline{text}{main()} function as exported.
-    \item  Load the executable into a program memory using \mintinline{text}{dlopen()}.
-    \item  Instrument the code using the C API of QBDI.
-\end{enumerate}
 
-It failed due to the QBDI's mode of functioning: it considers non-reentrant all the calls to dynamic linked libraries, and it switches the execution from instrumented to native (with no instrumentation at all). After the function return, it turns back the instrumentation. This whole mechanism is called execution transfer.
+- Transform the executable into a library by using the **LIEF** Python library to remove the PIE flag (that is present in executables) and mark the `main` function as exported.
+- Load the executable into a program memory using `dlopen`.
+- Instrument the code using the C API of QBDI.
 
-This limitation made us retry with a different API of QBDI, \textbf{QBDIPreload}. It is a utility library in which all the callbacks exported by the QBDI API are overwritten and called at runtime by the DBI engine. The instrumentation library is injected in the process memory by using the Linux loader's \mintinline{text}{LD_PRELOAD}.
+It failed due to the QBDI's execution transfer: it considers non-reentrant all the calls to dynamic linked libraries, and it switches the execution from instrumented to native (with no instrumentation at all). After the function return, it turns back the instrumentation.
 
-This second approach used a series of different steps:
-\begin{enumerate}
-    \item Create a callback function for basic block call. It applies an address normalization technique to discard the variances introduced by Address Space Layout Randomization. This relativization of the start address of the basic block is stored inside a list.
-    \item  Create a callback function for execution transfer. It checks if \mintinline{text}{close()} is called on a canary file, provided as an argument to the program.
-    \item  On exiting, create a non-cryptographic DJB2 hash over the first 1000 addresses in the CFG and dump it inside a file.
-\end{enumerate}
+This limitation made us retry with a different API of QBDI, `QBDIPreload`. It is a utility library in which all the callbacks exported by the QBDI API are overwritten and called at runtime by the DBI engine. The instrumentation library is injected in the process memory by using the Linux loader's `LD_PRELOAD`. This second approach used a series of different steps:
 
-In this manner, it can be said that if two arguments produces two different DJB2 hashes, then they produced a different sequence of nodes in the control flow graph.
+- Create a callback function for basic block call. It applies an address normalization technique to discard the variances introduced by Address Space Layout Randomization. This relativization of the start address of the basic block is stored inside a list.
+- Create a callback function for execution transfer. It checks if \mintinline{text}{close()} is called on a canary file, provided as an argument to the program.
+- On exiting, create a non-cryptographic DJB2 hash over the first 1000 addresses in the CFG and dump it inside a file.
 
-The last step here is the \textbf{generation of a dictionary with arguments}, which is created by parsing all the manuals present in a Linux operating system:
-\begin{enumerate}
-    \item Read the \mintinline{text}{man} configuration files to detect folders where manuals reside.
-    \item  Get each gzip archive from this kind of folder.
-    \item  Unarchive its content and search with Regex for common patters.
-\end{enumerate}
+By leveraging the described coverage extraction mechanism, the fuzzing process starts by generating some baseline hashes by running the program with no arguments and a series of random, 10-characters long arguments. Following this, a sequence of execution are performed into an Ubuntu-based Docker container, with a complete QBDI setup and gRPC communication:
 
-Combining the coverage information with the arguments from the dictionary, we can apply a bruteforce strategy to discover the arguments that are used by the provided executables.
+- Only a filename as an argument;
+- Each argument in the dictionary, in turn;
+- `-` as an argument; and
+- Each argument in the dictionary, in turn, plus a canary string.
 
-> About arguments fuzzing
-> Source: second report
+Each execution generates a DJB2 hash that is checked to be in the baseline set. If the hash wasn't seen until that moment, then the algorithm can say that the argument produced a different execution of the binary (i.e. different sequence of nodes in the control flow graph) and is registered as a valid argument. Besides this, each argument has a **role** attached that describe its effects:
+
+- **Flag** (e.g. `--force`): The argument alone produces a different hash.
+- **File enabler** (e.g. `--config production.yaml`): The program is run with the current argument accompanied by the name of a canary file generated by OpenCRS, having the `.opencrs` extension. On each execution transfer, the file descriptors of the process are checked to see if the canary file is opened.
+- **`stdin` enabled** (e.g. `--stdin`): If an execution ends with a timeout, the program is rerun with input provided at `stdin`. If these two executions produce different hashes, then the flag is considered as enabling `stdin`-readin capabilies and marked accordingly.
+- **String enabler** (e.g. `--action deploy`): The execution of the program with the arguments alone is compared with the one of the arguments accompanied by a string. If the first is different by the baseline ones and the latter is different by the first, then the argument will receive this role.
+
+## Testing
+
+As for the dataset module, we implemented a command-line interface for calling the functions exposed by the Python module.
+
+Below are given as examples the generation of an argument dictionary with the most used 6 arguments, the input stream detection from a binary from our toy testsuite, and the arguments fuzzing for a Linux binary, `uname`.
+
+```bash
+➜ opencrs-surface generate --heuristic man --output args.txt --top 6
+Successfully generated dictionary with 6 arguments
+➜ cat args.txt
+--and
+--get
+--get-feedbacks
+--no-progress-meter
+--print-name
+-input
+➜ opencrs-surface detect --elf stdin_buffer_overflow.elf
+┏━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┓
+┃ Stream                ┃ Present ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━┩
+│ files                 │   No    │
+│ arguments             │   No    │
+│ stdin                 │   Yes   │
+│ networking            │   No    │
+│ environment_variables │   No    │
+└───────────────────────┴─────────┘
+➜ opencrs-surface fuzz --elf /bin/uname --dictionary args.txt
+Several arguments were detected for the given program:
+
+┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓
+┃ Argument  ┃      Role      ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━┩
+│ -         │      FLAG      │
+│ -a        │      FLAG      │
+│ -i        │      FLAG      │
+│ -m        │      FLAG      │
+│ -n        │      FLAG      │
+│ -o        │      FLAG      │
+│ -p        │      FLAG      │
+│ -r        │      FLAG      │
+│ -s        │      FLAG      │
+│ -v        │      FLAG      │
+└───────────┴────────────────┘
+```
+
+> TODO: Replace `key-manager.elf` with an actual binary from toy
