@@ -1,9 +1,14 @@
+# Introduction
+
+[1] https://github.com/shellphish
+[2] https://forallsecure.com/mayhem-for-code
+[3] Ghenea
+
 # OpenCRS
 
 1. Ghenea
 2. HiColor Github
 3. Dropbox
-4. 
 
 # Dataset
 
