@@ -1,82 +1,26 @@
 # OpenCRS
 
-## Plan
+This thesis, together with one of my colleagues Claudiu Ghenea [1], is introducing an open-source cyber reasoning system. By leveraging the latest advances in the binary analysis field from both Academia and industry, OpenCRS is meant to implement the whole security assessment process for executables, from discovering the ways it takes the input to create patches for the discovered vulnerabilities.
 
-- Usecase
-- Characteristics
-  - 32-bit architecture
-  - C codebases
-  - ELF format
-  - Input streams: arguments, `stdin`, and files
-- Architecture
-  - Overall description of each module
-  - List of all modules
-  - Communication between modules
+As the variations in architectures, languages, and binaries' behavior are high, the goal was to develop a proof of concept that deals with executables having the following characteristics:
 
-## Existent Content
+- Run on a 32-bit Intel architecture, namely `i386`.
+- Run on Linux, and therefore have the ELF format.
+- Are compiled from C source code.
+- Have arguments, standard input, and files as input streams.
 
-...
+OpenCRS's overall architecture and the communication happening between the modules can be seen in the above diagram:
 
-> See `4 - Introduction.md`
-> For projec overview
+> Insert diagram
 
-Each function we describe in the previous section has a direct correspondent in the overall architecture. It can be seen in the above diagram what are the major modules and how the cyber reasoning system is interacting with the environment it functions.
+Considering an analyst requires the analysis of an executable, the modules and their internal workflows are managed as follow by the orchestration module:
 
-\vspace{0.3cm}
-\begin{center}
-    \includegraphics[width=14cm]{images/architecture.png}
-    \label{fig:1}
-    \captionsetup{justification=centering,margin=1cm}
-    \captionof{figure}{The proposed architecture}
-\end{center}
-\vspace{0.3cm}
+1. Dataset module: Integrating multiple public test suites with C source code, the module compiles it to obtain a series of executables. The main advantage of this approach is that OpenCRS can have a validation loop, considering the vulnerabilities included in the source code (as depicted by the CWE labels) and the ones discovered, exploited, and patched by the system. The dataset module is optional as the executables analyzed by OpenCRS can came already been built from other sources. For example, open (e.g. HiColor [2]) and closed (e.g. Dropbox [3]) source software provide their users the ability to download prebuilt binaries for diverse architecture.
+2. Attack surface approximation module: With an executable (and no further information about it) as input, this module will find how it can be attacked: either input streams or a specific format for them (for example, the arguments that are expected in `argv` by the program).
+3. Vulnerability discovery module: After the attack surface is discovered by the previous module, this module will use vulnerability discovery techniques like fuzzing and symbolic execution to find proof of vulnerabilities, namely inputs that make the program misbehave.
+4. Vulnerability analytics module: Once a proof of vulnerability, this module analyzes it to offer further details about the vulnerability it uncovers, for example, the class of vulnerabilities (e.g. buffer overflow).
+5. Automatic exploit generation module: The proof of vulnerability, enriched with details by the previous module, is used to generate an exploit that triggers it and achieves the highest impact possible.
+6. Signature generation module: Compared to the offensive nature of the previous one, the signature generation module has a defensive purpose. Having the same input as the automatic exploit generation module, it creates a signature that can be used to detect (and block) exploitation attempts. The module is useful in the context of critical or obsoleted systems, where an update to another program is not possible (due to availability loss or incompatibilities).
+7. Healing module: The goal of this module is the same as for the signature generation one, namely to protect the binary against exploitation approach. The difference is that, compared to the previous module, this one modified the binary to remove the vulnerable code or to build the proper sanitization, but by keeping the initial functionality intact.
 
-To further describe them, each module is seen as a system in which some \textbf{inputs} are processed by some inner processes (which are consistent with the \textbf{purpose} of the module) and later combined into a set of \textbf{output} data. In addition, we will detail which \textbf{techniques} we want to use as a base of our CRS and which ones will be placed in a backlog, consulted when wanting to add extra functionalities or encountering difficulties with the already-chosen ones.
-
-\subsubsection{Dataset Module}
-
-The dataset module \textbf{contains vulnerable programs} generated by us or taken from well-know public test suites. For example, NIST Juliet is integrated, which contains a set of small test programs written in C and exhibiting numerous classes of errors \cite{juliet_testcase}.
-
-Besides the advantage of having the original source code files, these test cases offer indexes where the programs are tagged with their compilation flags and corresponding \textbf{CWEs}. This allows the module to create executables and to \textbf{filter} the whole dataset by specific vulnerabilities, that can be further analyzed by the CRS.
-
-\subsubsection{Vulnerability Detection Module}
-
-The next module in the pipeline is the vulnerability detection one. It takes as input a vulnerable binary program and \textbf{generates proofs of vulnerability}, namely inputs that can be passed to the program to make it behave insecurely. In addition, information could be offered to describe in more detail the \textbf{root cause} of the vulnerability.
-
-There are multiple steps and approaches that can be integrated in this module:
-\begin{enumerate}
-    \item For \textbf{determining the attack surface} (the search space)
-    - \textbf{Static analysis} of the executable: It can be said that if a program uses an input stream, then the executable will contain some evidence. For example, if we consider reading from files, then functions such as \mintinline{text}{read}, \mintinline{text}{fread} and \mintinline{text}{fscanf} are linked (statically or dynamically).
-    - \textbf{Behavior analysis of a process}: By observing the way in which a process behave, it can be determined what are the inputs that the program takes. For instance, if the \mintinline{text}{recv} syscall is called, it can be certainly said that an attack vector is networking.
-    - \textbf{Crash reporting} (as in \cite{automated_approximation})
-    \item  For \textbf{limiting the search space}
-    - \textbf{Binary diffing}: Between releases, software vendors adds new functionality to their programs, in order to better solve the end user issues. So two consecutive versions of the same program can be different. Besides these changes, another ones can appear due to the fact that the vendors continuously find out about vulnerabilities in their software and patch them. By comparing two versions of the same program, vulnerabilities can be discovered either in the new functionalities (the older codebase is ignored and considered, in this scenario, invulnerable) or in the oldest version, by determining the security patches of the newest version.
-    - \textbf{Behavior analysis of a process}: The same behavior analysis described above can determine the hotspots of the program, namely the instruction that are frequently used by the process. These can be analyzed with priority because there is the highest triggering probability.
-    \item  For searching the space to \textbf{find out vulnerabilities}
-    - \textbf{Fuzzing}: By giving specific inputs (random or generated via some heuristics) to the program, via the input streams determined in the attack surface approximation step, the program could behave insecurely (crashing, producing segmentation faults).
-    - \textbf{Symbolic execution}: The concrete values that are passed to the program in a normal execution could be replaced with symbolic ones to determine edge cases.
-    - \textbf{Crash reporting}: The technique of reporting crashes to development teams (in order to fix the behavior that produced them) can be used here too. These can be produced by user activity, program's bugs, fuzzing or exploited vulnerabilities. A crash can be, for example, the result of an overwrite of a function pointer (which is a security issue too, not just a functional one) that is later called.
-    \item  For \textbf{finding the root cause} of a vulnerability
-    - \textbf{Dynamic taint analysis} (abbreviated DTA): By running again the program with the PoV that was found in the last step, but under extra observation (for example, by tracing all the operations), dynamic taint analysis determines how the tainted information (the one from the input) reached the sensitive position of memory that triggered the vulnerability.
-\end{enumerate}
-
-\subsection{Exploit Generation Module}
-
-As we described in the "\textit{Core Objectives}" section, having a vulnerability does not mean that an attacker could achieve anything he wants. It is limited by other factors, imposed unintentionally by the shape and the behavior of the executable. This module deals with \textbf{modeling these constraints} by taking as input the binary, a PoV and some additional details about it (for example, the DTA-determined root cause).
-
-It then uses some \textbf{strategies} (based on \textbf{game theory} and \textbf{boolean satisfiability problem}) to \textbf{generate an exploit} that will have the highest impact on the exploited system. For example, a \mintinline{text}{read} syscall that produces a buffer overflow, but which has a small \mintinline{text}{count} argument, will require an attacker to build a compact, but impactful return oriented programming chain, based on the gadgets that the executable contains.
-
-\subsection{Signature Generation Module}
-
-Same as the Exploit Generation Module, the Signature Generation one uses the same input information, but with a different goal: to \textbf{generate efficient signatures} to protect a system running a vulnerable program against exploitation attempts. This is due to critical or obsoleted systems, which does not support a software update due to the interruption of the services or old operating systems or hardware, which not enable newer and safer functionalities (for example, \mintinline{text}{gets_s} usage, which was introduced in the C11 standard).
-
-The module relies on the additional information about the PoV, generated, for example, by dynamic taint analysis. In this way, only the fundamental byte sequences of the proof will be included into the signature, a strategy that will ensure a greater false positive rate.
-
-\subsection{Healing Module}
-
-The last module that produces an output useful to the end user of the CRS is the healing one. The same information as the above two modules is used to determine what aspect of the binary is vulnerable. This can vary from a section that is marked as executable (and that, due to a buffer overflow, could allow an attacker to execute shellcodes) to an incorrectly-used format string function.
-
-Via \textbf{binary rewriting} techniques and custom \textbf{patching heuristics}, the module will be able to \textbf{create a new executable} which is no longer vulnerable and that could be deployed instead of the actual, vulnerable one.
-
-> From first report
-> For architecture
+The following chapters will describe in details the inner functioning of several modules. It should be noted that the remaining modules are tackled in other theses: the vulnerability analytics and healing modules in "" [1], and the signature generation one in "" [3].
