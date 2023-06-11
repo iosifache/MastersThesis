@@ -1,15 +1,17 @@
 # Further Development
 
-Due to the goal of creating a proof of concept for an open-source cyber reasoning system, we imposed the limitations presented in the chapter "OpenCRS" such that our implementation could reach the desired maturity and wholeness.
+Due to the goal of creating a proof of concept for an open-source cyber reasoning system, we imposed the **limitations** presented in the chapter "OpenCRS" such that our implementation could reach the desired maturity and wholeness.
 
-The improvements that can be made in the future firstly target the fundamental way in which OpenCRS works:
+> TODO: Add reference for the OpenCRS chapter
+
+Firstly, the possible future improvements may target the **fundamental way in which OpenCRS works**:
 
 - New executable formats: PE, Mach-O;
 - New CPU architectures: `x86-64`, `amd64`;
 - New input streams: network packets;
 - New programming languages.
 
-Besides this, the improvements target each implemented module.
+Besides this, the changes may improve the **implemented module**.
 
 ## Dataset Module
 
