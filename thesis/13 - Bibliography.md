@@ -1,3 +1,10 @@
+# OpenCRS
+
+1. Ghenea
+2. HiColor Github
+3. Dropbox
+4. 
+
 # Dataset
 
 1. A C/C++ Code Vulnerability Dataset with Code Changes and CVE Summaries
@@ -25,6 +32,9 @@
 
 1. AFl
 2. AFL++
+3. Teza bogdan
+4. [retdec]
+5. [klee]
 
 # AEG
 
@@ -48,3 +58,9 @@
 [6] radare
 [7] angr
 [8] pwntools
+
+# Further Development
+
+[1] https://github.com/trailofbits/cb-multios
+[2] https://github.com/ossf/fuzz-introspector
+[3] https://github.com/HexHive/retrowrite
