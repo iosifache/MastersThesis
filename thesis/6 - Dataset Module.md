@@ -31,29 +31,3 @@ These three datasets were linked as submodules in the `raw_testsuites` folder of
 All `gcc`-related operations (both preprocessing and building) are executed in a **Docker container** having Ubuntu as the operating system. This provides replicability of the building process and isolation from the host operating system. We prefer to communicate with the container by leveraging volumes (for sharing files) and Docker API calls. This suited the scenario better than having a gRPC service because the module's code is on the same host with the build container and the communication delays are minimized by avoiding sending large files (e.g. the sources and executables) over (a virtualized) network.
 
 When the build functionality is triggered from the command-line interface or by calling the specific method from the Python library, a parsers manager is activated. It selects the required parsers and calls the preprocessing and building methods. The results of the process, namely `Executable` objects, can be queried by using other operations, in which `vulnerable.csv` is parsed again.
-
-## Testing
-
-All modules were set into an Ubuntu virtual machine, where we could verify their functionality separately and conjunctively, by aggregating them in OpenCRS.
-
-For the dataset module, we leveraged the CLI to build the test suites (the toy one is offered as an example) and query the dataset. Further details regarding the analysis of the results will be provided in the chapter "Assessment".
-
-> **TODO**: Add the link to the mentioned chapter
-
-```bash
-➜ opencrs-dataset build --testsuite TOY_TEST_SUITE
-Successfully built 5 executables.
-
-➜ opencrs-dataset get
-The available executables are:
-
-┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ ID               ┃ CWEs                        ┃ Parent Database ┃ Full Path                        ┃
-┡━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ toy_test_suite_0 │ Stack-based Buffer Overflow │ toy_test_suite  │ executables/toy_test_suite_0.elf │
-│ toy_test_suite_1 │                             │ toy_test_suite  │ executables/toy_test_suite_1.elf │
-│ toy_test_suite_2 │ NULL Pointer Dereference    │ toy_test_suite  │ executables/toy_test_suite_2.elf │
-│ toy_test_suite_3 │ NULL Pointer Dereference    │ toy_test_suite  │ executables/toy_test_suite_3.elf │
-│ toy_test_suite_4 │                             │ toy_test_suite  │ executables/toy_test_suite_4.elf │
-└──────────────────┴─────────────────────────────┴─────────────────┴──────────────────────────────────┘
-```
