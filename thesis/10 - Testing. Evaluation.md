@@ -1,14 +1,14 @@
 # Testing and Assesment
 
-This chapter will outline the functional testing and assessment of the OpenCRS modules described earlier.
+The forthcoming chapter will delineate the process of functional testing and evaluation of the OpenCRS modules that were previously explicated.
 
-A virtual machine running **Ubuntu 22.04** was utilized for the purposes of testing and assessment. The setup guide for each module was adhered to, thereby ensuring that all prerequisites, such as Python libraries, Docker, and built images, were satisfied.
+For testing and evaluation, a virtual machine was employed, which was configured to run Ubuntu 22.04. The guidelines for configuring each module were followed, thus guaranteeing the fulfillment of all requirements, including Python libraries, Docker, and built images.
 
-Although each module has the capability to function as a Python library, we have opted to utilize the **command line interface** of each module due to its superior appropriateness for manual testing. Upon integration of the modules into the OpenCRS, a Python library will be utilized under an orchestration module.
+Even though every module possesses the ability to operate as a Python library, we have chosen to employ the command line interface of each module owing to its superior suitability for manual testing. The integration of the modules into the OpenCRS will involve the utilization of a Python library within an orchestration module.
 
 ## Dataset Generation
 
-For the dataset module, we have built all three integrated test suites, which are identified in the OpenCRS context by a unique ID: `nist_juliet`, `nist_c_test_suite`, and `toy_test_suite`. For this specific task, the `built` command was used in conjunction with the `get` one, which queries the index of built executables.
+For the dataset module, we have constructed all three integrated test suites, which are identifiable in the OpenCRS context by a unique ID: `nist_juliet`, `nist_c_test_suite`, and `toy_test_suite`. The present task involved the utilization of the `built` command in combination with the `get` command, which serves to retrieve the index of the built executables.
 
 ```bash
 ➜ opencrs-dataset build --testsuite NIST_C_TEST_SUITE
@@ -27,17 +27,17 @@ The available executables are:
 [...]
 ```
 
-This process resulted in a collection of 54591 vulnerable ELF executables, compiled from C sources and targetting the 32-bit i386 architecture. They were made available to the open source community by creating a setarate repository, `opencrs_dataset` [1].
+The outcome of this procedure yielded a set of 54591 vulnerable ELF executables, which were generated from C source code and designed for the 32-bit i386 architecture. The open-source community was granted access to the dataset through the establishment of a distinct repository, namely `opencrs_dataset` [1].
 
-The distribution of the executables per test suite (`54531` for `nist_juliet`, `50` for `nist_c_test_suite` and `10` for `toy_test_suite`) shows that compilation erorrs occured during the creation of the executables. We have stored all build logs and concluded that the main causes are either missing headers (e.g. `mysql/mysql.h`, `security/pam_appl.h`) and incompatibilties between Windows and Linux (e.g. usage of types like `wchar_t`).
+The observed distribution of executables across the test suites, namely `54531` for `nist_juliet`, `50` for `nist_c_test_suite`, and `10` for `toy_test_suite`, suggests the presence of compilation errors during the executables' generation process. Upon analyzing the build logs, it has been determined that the primary factors contributing to the issue are the absence of essential headers such as `mysql/mysql.h` and `security/pam_appl.h`, as well as inconsistencies between the Windows and Linux operating systems, such as the utilization of data types such as `wchar_t`.
 
-The details of all executables were stored in a CVE file named `index.csv`, with the following labels:
+The executable details were recorded in a CVE file denominated as `index.csv`, featuring the subsequent labels:
 
-- `name`: Unique identifier of a vulnerable program. It is used to determine the executable file path, namely by using the format `executables/<name>.elf`;
+- `name`: Unique identifier of a vulnerable program. The format `executables/<name>.elf` is utilized to determine the path of the executable file.
 - `cwes`: One or more CWEs that are present in the executable; and
 - `parent_dataset`: Parent dataset's identifier.
 
-Lastly, it should be mentioned that the used test suites does not adhere to an uniform executables distribution over each vulnerability type, identified by the CWE ID.
+Finally, it is noteworthy that the employed test suites do not conform to a consistent distribution of executables across each vulnerability type, as identified by the Common Weakness Enumeration (CWE) ID.
 
 | Weakness                                   | Count   |
 | ------------------------------------------ | ------- |
@@ -54,13 +54,13 @@ Lastly, it should be mentioned that the used test suites does not adhere to an u
 
 ## Arguments Dictionaries Generation
 
-The next tested and evaluated module was the attack surface discovery one.
+Subsequently, the module subjected to testing and evaluation was the attack surface discovery module.
 
-By leveraging the `generate` command and all three implemented heuristics, we could create dictionaries of arguments, which could be used for arguments fuzzing:
+Through utilization of the `generate` command and the three implemented heuristics, it is possible to generate dictionaries of arguments that may be employed for the purpose of argument fuzzing:
 
 - `generation`: `62` entries with arguments like `-a`, `-D`, and `-9`
 - `man_parsing`: `6701` entries with arguments like `--ascii`, `--cert-status`, and `--message-id`
-- `binary_pattern_matching` for `/usr/bin/uname`: `37` enties with arguments like `--operating-system`, `--processor` and `-linux-x86-64`. As it can be observed, the precision is non-unitary as not all returned strings are valid arguments. This happens because some string in the binaries respects the Regex for arguments. But this is not a blocker, as the arguments will be used in two more filtering stages afterward, namely the arguments fuzzing and in the vulnerability detection module.
+- `binary_pattern_matching` for `/usr/bin/uname`: `37` enties with arguments like `--operating-system`, `--processor` and `-linux-x86-64`. As evident from the observation, the precision is not unitary since not all the strings returned are valid arguments. This phenomenon occurs due to the adherence of certain character sequences within the binary files to the regular expression pattern for arguments. However, this does not present an impediment, as the aforementioned arguments will undergo two additional filtering stages, specifically the argument fuzzing and the vulnerability detection module.
 
 ```bash
 ➜ opencrs-surface generate --heuristic binary_pattern_matching --elf /usr/bin/uname --output uname.dict
@@ -73,7 +73,7 @@ Successfully generated dictionary with 37 arguments
 
 ## Arguments Fuzzing
 
-In the same module, the `fuzz` command was tested and evaluated against a Linux utility for retrieving information about the current host and operating system, namely `uname`. As a dictionary, the previously generated one was used.
+The `fuzz` command was subjected to testing and evaluation in the identical module, in comparison to the `uname` Linux utility, which is utilized for obtaining details regarding the present host and operating system. The previously generated dictionary was utilized for reference purposes.
 
 ```bash
 ➜ opencrs-surface fuzz --elf /usr/bin/uname --dictionary uname.dict
@@ -90,15 +90,15 @@ Several arguments were detected for the given program:
 [...]
 ```
 
-`-`, `--all`, `--hardware-platform`, `--kernel-name`, `--kernel-release`, `--kernel-version`, `--machine`, `--nodename`, `--operating-system`, and `--processor` were detected as valid arguments of the programs with two roles: `FLAG` (valid, as they are activating functionality), and `STRING_ENABLER` (invalid, as they are not requiring the user to provide any string afterward). By inspecting the results returned by QBDI, it can be concluded why this happens: the generated DJB2 hash for `-a` (i.e. `-939574273`) and for `-a <string>` (i.e. `657648750`) are different.
+`-`, `--all`, `--hardware-platform`, `--kernel-name`, `--kernel-release`, `--kernel-version`, `--machine`, `--nodename`, `--operating-system`, and `--processor` were identified as valid program arguments with two roles: `FLAG` (valid since they activate functionality) and `STRING_ENABLER` (invalid because they do not require the user to give any string after that). Upon examining the outcomes produced by QBDI, it can be inferred that the reason for this occurrence is due to the fact that the DJB2 hash generated for `-a` (i.e. `-939574273`) and for `-a <string>` (i.e. `657648750`) are different.
 
-On the other hand, `-` is not a valid argument, and the agument `--version`, which was initially included in the generated dictionary, was not detected as valid. This may happen due to `uname`'s implementation, as the code flow specific to this option is not detected by QBDI as a basic block transfer.
+Conversely, the hyphen symbol (`-`) does not constitute a legitimate argument, and the argument `--version`, which was originally incorporated in the produced dictionary, was not identified as a valid one. The observed occurrence could be attributed to the implementation of `uname`, as QBDI fails to recognize the code flow related to this option as a basic block transfer.
 
-A last observation for this functionality of the attack surface approximation module is aliases detection. `uname` accepts for all its arguments (the ones listed before) a short form. By taking `--all` as an example and continuing the QBDI results' inspection, it can be seen that its hash when tested for the flag role is `-939574273`, which is equal to the DJB2 hash of the `-a` argument. As the OpenCRS's module detects this colision, it will include only the first argument from the dictionary detected with this specific hash (in this case, `--all`).
+The final aspect to note regarding the functionality of the attack surface approximation module pertains to the detection of aliases. The `uname` command has the capability to accept abbreviated forms for all of its preceding arguments. By way of illustration using the `--all` option and further scrutinizing the QBDI outcomes, it is observable that the hash value of `-939574273` is obtained when the flag role is tested, corresponding to the DJB2 hash of the `-a` parameter. Upon collision detection by the OpenCRS module, it will selectively incorporate solely the initial argument from the dictionary that has been detected with the corresponding hash (namely, `--all`).
 
 ## Input Streams Detections
 
-We have used four executables from the toy test suite to assess the functionality of the input streams detection. All of them had at least one input stream from the set composed of `stdin`, files, and arguments.
+Four executables from the toy test suite were utilized to evaluate the efficacy of input stream detection. Each of the aforementioned programs possessed a minimum of one input stream originating from a collection consisting of `stdin`, files, and arguments.
 
 ```bash
 ➜ opencrs-surface detect --elf null_pointer_deref_args.elf
@@ -115,7 +115,7 @@ Several input mechanisms were detected for the given program:
 └──────────────────────┴─────────┘
 ```
 
-The below table summarizes the results.
+The following table presents a summary of the outcomes.
 
 | Executable                    | Arguments Stream | Files Stream  | stdin Stream  |
 |-------------------------------|------------------|---------------|---------------|
@@ -124,14 +124,14 @@ The below table summarizes the results.
 | null_pointer_deref_stdin.elf  | Detected (TP)    | Detected (FP) | N/A           |
 | multiple_inputs_streams.elf   | Detected (TP)    | Detected (TP) | Detected (TP) |
 
-In case of two programs, the file and `stdin` streams were incorrectly detected as present. This happens because the programs are using reading library calls, which are not specific to one or another. They are able in fact to read from a file pointer, so they are able to handle from both `stdin` (the `0` descriptor) and files (the descriptor returned by calls like `open` and `fopen`). From this reason, the modules preffer to favor false positives (streams that are not in fact real, which can be validated further in the vulnerability detection module) and not false negatives (streams that are use, but not reported).
+In two programs, the file and `stdin` streams were wrongly recognized as present. This phenomenon occurs due to the utilization of reading library calls by the programs, which lack specificity towards any particular one. It is noteworthy that these entities possess the capability to read from a file pointer, thereby enabling them to manage input from both `stdin` (the `0` descriptor) and files (the descriptor obtained through invocations such as `open` and `fopen`). For this reason, the modules tend to prioritize the promotion of false positives (streams that are not actually genuine but can be confirmed through the vulnerability detection module) over false negatives (streams that are authentic but remain unreported).
 
 ## Vulnerability Detection
 
-For detecting vulnerability with the three implemented fuzzers, we have choosed three programs crashing (by different causes) when a specific input was provided on an supported input streams. The vulnerabilities were:
+To identify vulnerabilities using the three implemented fuzzers, we selected three programs that experienced crashes due to distinct causes when provided with a particular input on supported input streams. The identified weaknesses or susceptibilities were:
 
-- Tainted format string: If `%s` was provided as an (input) format string, then a `NULL` pointer dereferencing occured. Another attack was providing `%n`, which tries to write to the same `NULL` pointer.
-- Stack buffer overflow: If the input has a sufficient length, then the saved EBP and EIP registers from the stack were overwritten. On return, the program will crash because the values are invalid.
+- Tainted format string: If `%s` was used as an input format string, a `NULL` pointer dereferencing occurred. Another attack used `%n` to try to write to the same `NULL` pointer.
+- Stack buffer overflow: If the input is long enough, the saved EBP and EIP registers on the stack are overwritten. The program will crash when it returns because the values are invalid.
 - NULL pointer dereferencing.
 
 ```bash
@@ -142,16 +142,16 @@ New proof of vulnerability was generated with the following payloads:
 00000000: 6E 25 6E 25                                       n%n%                                           .
 ```
 
-In this example, the NULL pointer dereferencing and the further crash were triggered by the input generated by afl++, namely the `%n`. In the other two cases, the fuzzer successfully generated the crashing inputs namely a long input for the executable vulnerable of buffer overflow and another having `y` on the fifth position for the one vulenrable of NULL pointer dereferencing.
+The input supplied by afl++, namely the `%n`, prompted the NULL pointer dereferencing and subsequent crash in this example. The fuzzer successfully created the crashing inputs in the other two cases, notably a long input for the executable prone to buffer overflow and another with `y` on the fifth place for the one vulnerable to NULL pointer dereferencing.
 
 ## Automatic Exploit Generation
 
-For the last functionality, the automatic exploit generation module was tested with three binary provided by Zeratool, all with `stdin` as an input stream and vulnerable by buffer overflow, but with different mitigations:
+The automatic exploit generating module was tested for the final functionality with three binary given by Zeratool, all having `stdin` as an input stream and vulnerable to buffer overflow, but with various mitigations:
 
-1. NX, canaries, and PIE disabled; and
-2. NX enabled + canaries and PIE disabled.
+1. Two with NX, canaries, and PIE disabled; and
+2. One with NX enabled + canaries and PIE disabled.
 
-In addition, one executable had a sensitive function that could be called in the exploit (as an alternative to other symbols, for example). The module successfully generated exploits in all cases.
+Furthermore, one executable contained a sensitive function that could be used in the exploit (as a substitute to, say, other symbols). In every example, the module effectively developed exploits.
 
 ```bash
 ➜ opencrs-aeg recommend --elf bof_nx_32 --stream=STDIN --mitigation=NX --weakness=STACK_OUT_OF_BOUND_WRITE

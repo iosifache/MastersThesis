@@ -1,41 +1,39 @@
 # Further Development
 
-Due to the goal of creating a proof of concept for an open-source cyber reasoning system, we imposed the **limitations** presented in the chapter "OpenCRS" such that our implementation could reach the desired maturity and wholeness.
+In order to achieve the objective of developing a proof of concept for an open-source cyber reasoning system, we have incorporated the constraints outlined in the "OpenCRS" chapter. This approach has enabled us to attain the desired level of maturity and comprehensiveness in our implementation.
 
-> TODO: Add reference for the OpenCRS chapter
-
-Firstly, the possible future improvements may target the **fundamental way in which OpenCRS works**:
+Initially, potential enhancements could be directed towards the fundamental operational framework of OpenCRS.
 
 - New executable formats: PE, Mach-O;
 - New CPU architectures: `x86-64`, `amd64`;
 - New input streams: network packets;
-- New programming languages
-- Unification of all modules' configuration into one file.
+- New programming languages; and
+- The merging of configuration settings for all modules into a single file.
 
-Besides this, the changes may improve the **implemented module**.
+Moreover, the aforementioned modifications have the potential to enhance the functionality of the implemented module.
 
 ## Dataset Module
 
-- Static code analysis over the source files included in the test suites, such that the input streams are detected and used as labels in the dataset
-- More tests in the suite created by us by importing the Zeratool's binaries and creating small and handmade executables (which can be used in the testing phases because of the execution speed)
-- More test suits, such as `cb-multios` [1], a Linux port of the executables used in DARPA's Cyber Grand Challenge
+- Static code analysis of the source files in the test suites, such that the input streams are detected and used as labels in the dataset
+- More tests in the suite built by us by importing Zeratool binaries and constructing compact and handcrafted executables (which can be used in testing phases because of their execution speed).
+- More test suits, such as `cb-multios` [1], a Linux port of DARPA's Cyber Grand Challenge executables
 
 ## Attack Surface Approximation Module
 
-- Improve the accuracy of the binary matching heuristic by searching only in some sections of the executable
-- Improve the accuracy of arguments fuzzing by studying other execution events available in QBDI
-- New technique to detect the usage of an input stream, such as symbolically running the binary and intercepting the input-related (library or system) calls
-- Pair-wise testing of arguments, for scenarios of dependency relations
-- Migration from mounted Docker volumes to gRPC for the QBDI and Ghidra containers
+- Improvements in the binary matching heuristic's accuracy by searching just in certain regions of the executable (for example, `.text`, `.data`, and `.bss`)
+- Improvements in the accuracy of argument fuzzing by examining other QBDI execution events
+- New method for detecting input stream usage, such as symbolically running the binary and intercepting input-related (library or system) calls.
+- Argument testing in pairs for cases with dependency relations
+- Migration of QBDI and Ghidra containers from mounted Docker volumes to gRPC
 
 ## Vulnerability Discovery Module
 
-- Timeout or coverage convergence heuristic for stopping the fuzzing session, for example by leveraging Fuzz Introspector [2]
+- Stopping the fuzzing session using a timeout or coverage convergence strategy, such as Fuzz Introspector [2]
 - Binary rewriting for adding Address Sanitizer, for example with RetroWrite [3]
-- Migration from mounted Docker volumes to gRPC for the afl++ containers
+- Migration of afl++ containers from mounted Docker volumes to gRPC
 
 ## Automatic Exploit Generation
 
-- Reverification of the created exploit in a sandboxed environment
-- Exploitation via format string attacks, a technique that is implemented by the already-integrated `zeratool_lib`
-- New exploitation techniques, eventually for other input streams too
+- In a sandboxed environment, reverification of the produced exploit
+- Exploitation through format string attacks, a technique supported by the already-integrated `zeratool_lib`
+- New exploitation techniques, possibly for other input streams as well

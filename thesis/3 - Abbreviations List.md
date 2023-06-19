@@ -3,3 +3,4 @@
 - CLI: command-line interface
 - CRS: Cyber Reasoning System
 - Defense Advanced Research Projects Agency (DARPA)
+- ELF

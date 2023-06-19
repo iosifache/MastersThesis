@@ -1,26 +1,24 @@
 # OpenCRS
 
-This thesis, together with one of my colleagues Claudiu Ghenea [1], is introducing an open-source cyber reasoning system. By leveraging the latest advances in the binary analysis field from both Academia and industry, OpenCRS is meant to implement the **entire security assessment process for executables**, from discovering the ways it takes the input to create patches for the discovered vulnerabilities.
+This study, together with Claudiu Ghenea's [1], presents an open-source cyber reasoning system. OpenCRS aims to implement a comprehensive security assessment process for executables by utilizing the latest advancements in binary analysis from both academic and industrial sectors. The purpose of OpenCRS is to execute a comprehensive security evaluation of executable files, encompassing the identification of input methods and the development of patches to address any detected vulnerabilities.
 
-As the variations in architectures, languages, and binaries' behavior are high, the goal was to develop a **proof of concept** that deals with executables having the following characteristics:
+Given the significant diversity in architectures, programming languages, and binary behaviors, the objective was to create a proof of concept that addresses the execution of programs exhibiting the subsequent attributes:
 
-- Run on a 32-bit Intel architecture, namely the **`i386` ISA**.
-- Run on Linux, and therefore have the **ELF format**.
-- Are compiled from **C source code**.
-- Have **arguments**, **standard input**, and **files** as input streams.
+- The system operates on a 32-bit Intel architecture, specifically utilizing the `i386` Instruction Set Architecture.
+- The software is compatible with the Linux operating system and utilizes the Executable and Linkable Format (ELF).
+- These are generated from the source code written in the C programming language.
+- The input streams for arguments, standard input, and files are utilized.
 
-OpenCRS's **overall architecture** and the communication happening between the modules can be seen in the above diagram:
+The diagram above depicts the comprehensive architecture of OpenCRS and the inter-module communication taking place within the system.
 
-> Insert diagram
+Given that an analyst demands an executable analysis, the orchestration module manages the modules and their internal procedures as follows:
 
-Considering an analyst requires the analysis of an executable, the modules and their internal workflows are managed as follow by the orchestration module:
+1. Dataset module: By incorporating various public test suites into the C source code, the module can compile it and generate a sequence of executable files. The primary benefit of this methodology is that OpenCRS can implement a validation mechanism that takes into account the vulnerabilities present in the source code, as indicated by the CWE labels, as well as those that have been identified, exploited, and remediated by the system. The dataset module is not mandatory since the analyzed executables utilized by OpenCRS may have already been constructed from alternative origins. Both open-source software, such as HiColor [2], and closed-source software, such as Dropbox [3], offer their users the option to download prebuilt binaries that cater to a variety of architectures.
+2. Attack surface approximation module: With an executable (and no other knowledge about it) as input, this module will determine how it might be attacked: either through input streams or a predefined format for them (for example, the arguments that the program expects in `argv`).
+3. Vulnerability discovery module: Subsequent to the identification of the attack surface by the preceding module, this module will employ vulnerability discovery methodologies such as fuzzing and symbolic execution to ascertain the existence of vulnerabilities, specifically inputs that result in erroneous program behavior.
+4. Vulnerability analytics module: Upon detecting a proof of vulnerability, this module conducts an analysis to provide additional information regarding the specific vulnerability that has been identified. This may include identifying the category of vulnerability, such as a buffer overflow.
+5. Automatic exploit generation module: The preceding module's proof of vulnerability is utilized to develop an exploit that triggers it and has the greatest possible impact.
+6. Signature generation module: In contrast to the aggressive connotation of its predecessor, the module responsible for generating signatures serves a protective function. By utilizing identical input to the automatic exploit generation module, a signature is generated with the purpose of identifying and preventing exploitation endeavors. The module is deemed valuable in scenarios involving critical or outdated systems, wherein the installation of an alternative program is not feasible due to the unavailability of the program or compatibility issues.
+7. Healing module: The objective of this module is akin to that of the signature generation module, which is to safeguard the binary from exploitation techniques. In contrast to the preceding module, the current one has made alterations to the binary in order to eliminate the vulnerable code or implement appropriate sanitization measures, while preserving the original functionality.
 
-1. **Dataset module**: Integrating multiple public test suites with C source code, the module compiles it to obtain a series of executables. The main advantage of this approach is that OpenCRS can have a validation loop, considering the vulnerabilities included in the source code (as depicted by the CWE labels) and the ones discovered, exploited, and patched by the system. The dataset module is optional as the executables analyzed by OpenCRS can came already been built from other sources. For example, open (e.g. HiColor [2]) and closed (e.g. Dropbox [3]) source software provide their users the ability to download prebuilt binaries for diverse architecture.
-2. **Attack surface approximation module**: With an executable (and no further information about it) as input, this module will find how it can be attacked: either input streams or a specific format for them (for example, the arguments that are expected in `argv` by the program).
-3. **Vulnerability discovery module**: After the attack surface is discovered by the previous module, this module will use vulnerability discovery techniques like fuzzing and symbolic execution to find proof of vulnerabilities, namely inputs that make the program misbehave.
-4. **Vulnerability analytics module**: Once a proof of vulnerability, this module analyzes it to offer further details about the vulnerability it uncovers, for example, the class of vulnerabilities (e.g. buffer overflow).
-5. **Automatic exploit generation module**: The proof of vulnerability, enriched with details by the previous module, is used to generate an exploit that triggers it and achieves the highest impact possible.
-6. **Signature generation module**: Compared to the offensive nature of the previous one, the signature generation module has a defensive purpose. Having the same input as the automatic exploit generation module, it creates a signature that can be used to detect (and block) exploitation attempts. The module is useful in the context of critical or obsoleted systems, where an update to another program is not possible (due to availability loss or incompatibilities).
-7. **Healing module**: The goal of this module is the same as for the signature generation one, namely to protect the binary against exploitation approach. The difference is that, compared to the previous module, this one modified the binary to remove the vulnerable code or to build the proper sanitization, but by keeping the initial functionality intact.
-
-The following chapters will describe in details the inner functioning of several modules. It should be noted that the remaining modules are tackled in other theses: the vulnerability analytics and healing modules in "" [1], and the signature generation one in "" [3].
+Subsequent chapters will provide a comprehensive account of the internal operations of various modules. It is noteworthy that the outstanding modules have been addressed in separate theses: the vulnerability analytics and healing modules in [1], and the signature generation module in [3].
