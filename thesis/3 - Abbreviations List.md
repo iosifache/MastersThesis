@@ -1,6 +1,0 @@
-- CWE: Common Weakness Enumeration
-- NIST: National Institute of Standards and Technology
-- CLI: command-line interface
-- CRS: Cyber Reasoning System
-- Defense Advanced Research Projects Agency (DARPA)
-- ELF

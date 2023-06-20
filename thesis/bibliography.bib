@@ -1,0 +1,265 @@
+% OpenCRS's Theses
+
+@masterthesis{ghenea,
+    author = {Claudiu Ghenea},
+    institution = {University POLITEHNICA of Bucharest},
+    school = {Faculty of Automatic Control and Computers},
+    title = {OpenCRS: Cyber Reasoning Systems, Vulnerability Analytics and Automatic Patching in Binaries},
+    year = 2023
+}
+
+@masterthesis{bogdan,
+    author = {Bogdan-Andrei Cîrceanu},
+    institution = {University POLITEHNICA of Bucharest},
+    school = {Faculty of Automatic Control and Computers},
+    title = {Symbolic Execution as a Vulnerability Detection Technique Within a Cyber Reasoning System},
+    year = 2023,
+    type={Bachelor's Thesis}
+}
+
+@masterthesis{stefan,
+    author = {Ștefan Pană},
+    institution = {University POLITEHNICA of Bucharest},
+    school = {Faculty of Automatic Control and Computers},
+    title = {Exploit Detection using System Calls Tracing},
+    year = 2023,
+    type={Bachelor's Thesis}
+}
+
+% Tools and Repositories, Including Public OpenCRS Modules
+
+@misc{dataset_module_repo,
+  title = {dataset},
+  howpublished = {\url{https://github.com/CyberReasoningSystem/dataset}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{surface_module_repo,
+  title = {attack\_surface\_approximation},
+  howpublished = {\url{https://github.com/CyberReasoningSystem/attack_surface_approximation}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{vulnerability_detection_module_repo,
+  title = {vulnerability\_detection},
+  howpublished = {\url{https://github.com/CyberReasoningSystem/vulnerability_detection}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{aeg_module_repo,
+  title = {automatic\_exploit\_generation},
+  howpublished = {\url{https://github.com/CyberReasoningSystem/automatic_exploit_generation}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{opencrs_dataset,
+  title = {opencrs\_dataset},
+  howpublished = {\url{https://github.com/CyberReasoningSystem/opencrs_dataset}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{zeratool,
+  title = {Zeratool},
+  howpublished = {\url{https://github.com/ChrisTheCoolHut/Zeratool}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{zeratool_lib,
+  title = {zeratool\_lib},
+  howpublished = {\url{https://github.com/CyberReasoningSystem/zeratool_lib}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{mayhem,
+  title = {Mayhem for Code},
+  howpublished = {\url{https://forallsecure.com/mayhem-for-code}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{shellphish,
+  title = {Shellphish},
+  howpublished = {\url{https://github.com/shellphish}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{nist_c_test_suite,
+  title = {C Test Suite for Source Code Analyzer v2 - Vulnerable},
+  howpublished = {\url{https://samate.nist.gov/SARD/test-suites/100}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{nist_c_test_suite_repo,
+  title = {NIST's C Test Suite},
+  howpublished = {\url{https://github.com/CyberReasoningSystem/nist_c_test_suite}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{nist_juliet,
+  title = {Juliet C/C++ 1.3},
+  howpublished = {\url{https://samate.nist.gov/SARD/test-suites/112}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{nist_juliet_repo,
+  title = {Juliet Test Suite for C/C++},
+  howpublished = {\url{https://github.com/arichardson/juliet-test-suite-c}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{qbdi,
+  title = {QuarkslaB Dynamic binary Instrumentation },
+  howpublished = {\url{https://qbdi.quarkslab.com}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{afl,
+  title = {american fuzzy lop},
+  howpublished = {\url{https://github.com/google/AFL}},
+  note = {Accessed: 2023-06-20}
+}
+
+@misc{aflpp,
+  title = {afl++},
+  howpublished = {\url{https://github.com/AFLplusplus/AFLplusplus}},
+  note = {Accessed: 2023-06-20}
+}
+
+% Academic Resources
+
+@inproceedings{c_code_changes_dataset,
+    author = {Fan, Jiahao and Li, Yi and Wang, Shaohua and Nguyen, Tien N.},
+    title = {A C/C++ Code Vulnerability Dataset with Code Changes and CVE Summaries},
+    year = {2020},
+    isbn = {9781450375177},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3379597.3387501},
+    doi = {10.1145/3379597.3387501},
+    abstract = {We collected a large C/C++ code vulnerability dataset from open-source Github projects, namely Big-Vul. We crawled the public Common Vulnerabilities and Exposures (CVE) database and CVE-related source code repositories. Specifically, we collected the descriptive information of the vulnerabilities from the CVE database, e.g., CVE IDs, CVE severity scores, and CVE summaries. With the CVE information and its related published Github code repository links, we downloaded all of the code repositories and extracted vulnerability related code changes. In total, Big-Vul contains 3,754 code vulnerabilities spanning 91 different vulnerability types. All these code vulnerabilities are extracted from 348 Github projects. All information is stored in the CSV format. We linked the code changes with the CVE descriptive information. Thus, our Big-Vul can be used for various research topics, e.g., detecting and fixing vulnerabilities, analyzing the vulnerability related code changes. Big-Vul is publicly available on Github.},
+    booktitle = {Proceedings of the 17th International Conference on Mining Software Repositories},
+    pages = {508–512},
+    numpages = {5},
+    keywords = {C/C++ Code, Common Vulnerabilities and Exposures, Code Changes},
+    location = {Seoul, Republic of Korea},
+    series = {MSR '20}
+}
+
+@Article{sonarcloud_dataset,
+    AUTHOR = {Raducu, Razvan and Esteban, Gonzalo and Rodríguez Lera, Francisco J. and Fernández, Camino},
+    TITLE = {Collecting Vulnerable Source Code from Open-Source Repositories for Dataset Generation},
+    JOURNAL = {Applied Sciences},
+    VOLUME = {10},
+    YEAR = {2020},
+    NUMBER = {4},
+    ARTICLE-NUMBER = {1270},
+    URL = {https://www.mdpi.com/2076-3417/10/4/1270},
+    ISSN = {2076-3417},
+    ABSTRACT = {Different Machine Learning techniques to detect software vulnerabilities have emerged in scientific and industrial scenarios. Different actors in these scenarios aim to develop algorithms for predicting security threats without requiring human intervention. However, these algorithms require data-driven engines based on the processing of huge amounts of data, known as datasets. This paper introduces the SonarCloud Vulnerable Code Prospector for C (SVCP4C). This tool aims to collect vulnerable source code from open source repositories linked to SonarCloud, an online tool that performs static analysis and tags the potentially vulnerable code. The tool provides a set of tagged files suitable for extracting features and creating training datasets for Machine Learning algorithms. This study presents a descriptive analysis of these files and overviews current status of C vulnerabilities, specifically buffer overflow, in the reviewed public repositories.},
+    DOI = {10.3390/app10041270}
+}
+
+@techreport{measuring_attack_surface,
+  title={An approach to measuring a system's attack surface},
+  author={Manadhata, Pratyusa K and Tan, Kymie M and Maxion, Roy A and Wing, Jeannette M},
+  year={2007},
+  institution={CARNEGIE-MELLON UNIV PITTSBURGH PA SCHOOL OF COMPUTER SCIENCE}
+}
+
+@inproceedings{security_vuln_likelihood,
+  title={Characterizing the 'security vulnerability likelihood' of software functions},
+  author={DaCosta, Dan and Dahn, Christopher and Mancoridis, Spiros and Prevelakis, Vassilis},
+  booktitle={International Conference on Software Maintenance, 2003. ICSM 2003. Proceedings.},
+  pages={266--274},
+  year={2003},
+  organization={IEEE}
+}
+
+@inproceedings{nt_robustness,
+  title={An approach for analyzing the Robustness of Windows NT Software},
+  author={Ghosh, Anup K and Shah, Viren and Schmid, Matt},
+  booktitle={Proc. 21st National Information Systems Security Conference, Crystal City, VA, USA},
+  pages={383--391},
+  year={1998}
+}
+
+@inproceedings{power,
+  title={POWER: Program option-aware fuzzer for high bug detection ability},
+  author={Lee, Ahcheong and Ariq, Irfan and Kim, Yunho and Kim, Moonzoo},
+  booktitle={2022 IEEE Conference on Software Testing, Verification and Validation (ICST)},
+  pages={220--231},
+  year={2022},
+  organization={IEEE}
+}
+
+@inproceedings{cli_fuzzer,
+  title={CLIFuzzer: mining grammars for command-line invocations},
+  author={Gupta, Abhilash and Gopinath, Rahul and Zeller, Andreas},
+  booktitle={Proceedings of the 30th ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering},
+  pages={1667--1671},
+  year={2022}
+}
+
+@article{aeg,
+  title={Automatic exploit generation},
+  author={Avgerinos, Thanassis and Cha, Sang Kil and Rebert, Alexandre and Schwartz, Edward J and Woo, Maverick and Brumley, David},
+  journal={Communications of the ACM},
+  volume={57},
+  number={2},
+  pages={74--84},
+  year={2014},
+  publisher={ACM New York, NY, USA}
+}
+
+@inproceedings{mayhem_paper,
+  title={Unleashing mayhem on binary code},
+  author={Cha, Sang Kil and Avgerinos, Thanassis and Rebert, Alexandre and Brumley, David},
+  booktitle={2012 IEEE Symposium on Security and Privacy},
+  pages={380--394},
+  year={2012},
+  organization={IEEE}
+}
+
+@inproceedings{bop,
+  title={Block oriented programming: Automating data-only attacks},
+  author={Ispoglou, Kyriakos K and AlBassam, Bader and Jaeger, Trent and Payer, Mathias},
+  booktitle={Proceedings of the 2018 ACM SIGSAC Conference on Computer and Communications Security},
+  pages={1868--1882},
+  year={2018}
+}
+
+@inproceedings{bof_aeg,
+  title={Automatic exploit generation for buffer overflow vulnerabilities},
+  author={Xu, Luhang and Jia, Weixi and Dong, Wei and Li, Yongjun},
+  booktitle={2018 IEEE International Conference on Software Quality, Reliability and Security Companion (QRS-C)},
+  pages={463--468},
+  year={2018},
+  organization={IEEE}
+}
+
+@inproceedings{crs_aeg_survey,
+  title={Survey of automated vulnerability detection and exploit generation techniques in cyber reasoning systems},
+  author={Brooks, Teresa Nicole},
+  booktitle={Intelligent Computing: Proceedings of the 2018 Computing Conference, Volume 2},
+  pages={1083--1102},
+  year={2019},
+  organization={Springer}
+}
+
+@inproceedings{alphahacking,
+  title={The coming era of alphahacking?: A survey of automatic software vulnerability detection, exploitation and patching techniques},
+  author={Ji, Tiantian and Wu, Yue and Wang, Chang and Zhang, Xi and Wang, Zhongru},
+  booktitle={2018 IEEE third international conference on data science in cyberspace (DSC)},
+  pages={53--60},
+  year={2018},
+  organization={IEEE}
+}
+
+@article{code_reuse_survey,
+  title={Survey of methods for automated code-reuse exploit generation},
+  author={Vishnyakov, Alexey V and Nurmukhametov, Alexey R},
+  journal={Programming and Computer Software},
+  volume={47},
+  pages={271--297},
+  year={2021},
+  publisher={Springer}
+}
