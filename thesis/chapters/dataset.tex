@@ -50,6 +50,7 @@ Enumeration item).
 
 \begin{landscape}
 \vspace*{\fill}
+\renewcommand*\figurename{Figure}
 \begin{figure}[!h]
    \centering
     \includegraphics[width=0.95\linewidth]{images/dataset.png}
@@ -78,7 +79,7 @@ The necessity for custom binaries became more apparent during the
 testing of other components. We ended up building an additional custom
 test suite in the dataset module called \texttt{toy\_test\_suite} with a
 simple folder structure: a source containing vulnerable code and a
-\texttt{cwe.txt} file with the associated CWE ID. Small executables such
+\texttt{cwe.txt} file with the associated Common Weakness Enumeration (CWE) ID. Small executables such
 as stack buffer overflows, \texttt{NULL} pointer dereferences, and
 tainted format strings were included here.
 
@@ -123,7 +124,7 @@ as the build container, and communication delays are reduced by avoiding
 transferring large files (e.g.~the sources and executables) via (a
 virtualized) network.
 
-A parsers manager is enabled when the build functionality is started
+A parsers' manager is enabled when the build functionality is started
 from the command-line interface or by invoking the specified method from
 the Python module. It chooses the necessary parsers and invokes the
 preprocessing and construction techniques. The process's output,

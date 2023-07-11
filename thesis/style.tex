@@ -20,6 +20,8 @@
 \usepackage{biblatex}
 \usepackage{listings}
 
+\selectlanguage{english}
+
 \renewcommand\familydefault{\sfdefault}
 
 \titleformat{\chapter}{\large\bfseries\MakeUppercase}{\thechapter}{2ex}{}[\vspace*{-1.5cm}]
@@ -30,6 +32,9 @@
 \counterwithout{figure}{chapter}
 \counterwithout{table}{chapter}
 \counterwithout{equation}{chapter}
+
+\captionsetup[table]{name=Table}
+\renewcommand*\figurename{Figure}
 
 \setlist{noitemsep}
 
@@ -55,3 +60,16 @@
 \setcounter{biburlnumpenalty}{9000}
 \setcounter{biburllcpenalty}{9000}
 \setcounter{biburlucpenalty}{9000}
+
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{front}{
+  \fancyfoot[C]{\small \thepage}
+}
+\pagestyle{front}
+\fancypagestyle{plain}{
+  \fancyfoot[C]{\small \thepage}
+}
+\newenvironment{frontmatter}{\pagenumbering{roman}}{\newpage \pagenumbering{arabic}}
+\AtBeginDocument{\addtocontents{toc}{\protect\thispagestyle{front}}}
+\addtocontents{lof}{\protect\thispagestyle{front}}

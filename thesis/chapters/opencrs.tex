@@ -24,7 +24,7 @@ attributes:
 \tightlist
 \item
   The system operates on a 32-bit Intel architecture, specifically
-  utilizing the \texttt{i386} Instruction Set Architecture.
+  utilizing the \texttt{i386} instruction set architecture.
 \item
   The software is compatible with the Linux operating system and
   utilizes the ELF format.
@@ -36,10 +36,11 @@ attributes:
   utilized.
 \end{itemize}
 
-The diagram above depicts the comprehensive architecture of OpenCRS and
+The diagram below depicts the comprehensive architecture of OpenCRS and
 the inter-module communication taking place within the system.
 
 \begin{landscape}
+\renewcommand*\figurename{Figure}
 \begin{figure}[!h]
    \centering
     \includegraphics[height=0.95\textheight]{images/opencrs.png}
@@ -90,9 +91,9 @@ module manages the modules and their internal procedures as follows:
   vulnerability is utilized to develop an exploit that triggers it and
   has the greatest possible impact.
 \item
-  Signature generation module: In contrast to the aggressive connotation
+  Signature generation module: In contrast to the offensive nature
   of its predecessor, the module responsible for generating signatures
-  serves a protective function. By utilizing identical input to the
+  serves a protective function. By utilizing identical input as the
   automatic exploit generation module, a signature is generated with the
   purpose of identifying and preventing exploitation endeavors. The
   module is deemed valuable in scenarios involving critical or outdated

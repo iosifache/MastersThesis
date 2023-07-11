@@ -48,6 +48,7 @@ proof of concept, we simply used three of the most common:
 
 \begin{landscape}
 \vspace*{\fill}
+\renewcommand*\figurename{Figure}
 \begin{figure}[!h]
    \centering
     \includegraphics[height=0.85\textheight]{images/surface.png}
@@ -152,7 +153,7 @@ heuristics:
 \item
   \texttt{man\_parsing}: First, it scans the \texttt{man} configuration
   files to determine which folders contain manuals. Finds all gzip files
-  in this location, unarchives them, and matches their content against
+  in this location, unzips them, and matches their content against
   the same Regex pattern as above. The returned arguments list can
   optionally be reduced to a specified amount of elements based on their
   occurrence.
@@ -225,7 +226,7 @@ to dynamically linked libraries to be non-reentrant and moves the
 execution from instrumented to native (with no instrumentation at all).
 It returns the instrumentation after the function return.
 
-This limitation prompted us retry with a different API of QBDI,
+This limitation prompted us to retry with a different API of QBDI,
 \texttt{QBDIPreload}. It is a utility library in which the DBI engine
 overwrites and calls all of the callbacks exported by the QBDI API
 during runtime. The instrumentation library is loaded into process
@@ -239,10 +240,12 @@ method involved a number of steps:
   an address normalization technique. This relativization of the basic
   block's start address is saved in a list.
 
-\begin{captioned_verbatim}[title={The Address Normalization Technique}]
+\begin{tiny}
+\begin{verbatim}
 start_address -= segments[parent_segment].start;
 abstract_address = (parent_segment << 24) + start_address;
-\end{captioned_verbatim}
+\end{verbatim}
+\end{tiny}
 
 \item
   Write a callback function to handle execution transfers. It checks to

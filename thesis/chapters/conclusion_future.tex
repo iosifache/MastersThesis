@@ -3,15 +3,23 @@
 
 \begin{document}
 
-\hypertarget{further-development}{%
-\chapter{Further Development}\label{further-development}}
+\hypertarget{conclusion}{%
+\chapter{Conclusion and Future Work}\label{conclusion_future}}
+
+\hypertarget{conclusion}{%
+\section{Conclusion}\label{conclusion}}
+
+Our objective was to initiate the implementation of four modules of a novel open source cyber reasoning system that could effectively utilize the technical advancements in binary analysis achieved since the Cyber Grand Challenge sponsored by DARPA and the present time. The paper provided a concise overview of the notion of a CRS, which was expounded upon in greater depth in a related dissertation \cite{ghenea}. The author provided a comprehensive overview of each module within the CRS, including the dataset, attack surface approximation, vulnerability detection, and automatic exploit generation. The presentation included the purpose of each module, its connections with other modules, theoretical considerations, architecture, and technical implementation.
+
+The available interfaces for testing the modules were the command line interface and the set of exposed Python methods. The modules were tested manually using the former. The present thesis has introduced an open source dataset comprising vulnerable programs, a subset of which was utilized during the evaluation phase. Although the precision is not unary and the testing has uncovered certain limitations, we maintain confidence that the research presented in this thesis and \cite{ghenea} provides a robust foundation for future endeavors (as emphasized in the subsequent section of this chapter), whether undertaken by fellow students or members of the open source community.
+
+\hypertarget{future-work}{%
+\section{Future Work}\label{future-work}}
 
 Due to the goal of creating a proof of concept for an open-source cyber
-reasoning system, we imposed the \textbf{limitations} presented in the
+reasoning system, we imposed the limitations presented in the
 chapter \ref{opencrs} such that our implementation could reach the desired
-maturity and wholeness.
-
-Firstly, the possible future improvements may target the
+maturity and wholeness. Firstly, the possible future improvements may target the
 fundamental way in which OpenCRS works:
 
 \begin{itemize}
@@ -23,7 +31,7 @@ fundamental way in which OpenCRS works:
 \item
   New input streams: network packets;
 \item
-  New programming languages
+  New programming languages; and
 \item
   Unification of all modules' configuration into one file.
 \end{itemize}
@@ -31,7 +39,7 @@ fundamental way in which OpenCRS works:
 Besides this, the changes may improve the implemented module.
 
 \hypertarget{dataset-module}{%
-\section{Dataset Module}\label{dataset-module}}
+\subsection{Dataset Module}\label{future-dataset-module}}
 
 \begin{itemize}
 \tightlist
@@ -49,14 +57,14 @@ Besides this, the changes may improve the implemented module.
 \end{itemize}
 
 \hypertarget{attack-surface-approximation-module}{%
-\section{Attack Surface Approximation
+\subsection{Attack Surface Approximation
 Module}\label{attack-surface-approximation-module}}
 
 \begin{itemize}
 \tightlist
 \item
   Improve the accuracy of the binary matching heuristic by searching
-  only in specific sections of the executable
+  only in specific subsections of the executable
 \item
   Improve the accuracy of arguments fuzzing by studying other execution
   events available in QBDI
@@ -72,7 +80,7 @@ Module}\label{attack-surface-approximation-module}}
 \end{itemize}
 
 \hypertarget{vulnerability-discovery-module}{%
-\section{Vulnerability Discovery
+\subsection{Vulnerability Discovery
 Module}\label{vulnerability-discovery-module}}
 
 \begin{itemize}
@@ -88,7 +96,7 @@ Module}\label{vulnerability-discovery-module}}
 \end{itemize}
 
 \hypertarget{automatic-exploit-generation}{%
-\section{Automatic Exploit
+\subsection{Automatic Exploit
 Generation}\label{automatic-exploit-generation}}
 
 \begin{itemize}

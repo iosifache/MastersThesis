@@ -40,8 +40,8 @@ The available executables are:
 -----------------------------------------------------------------------------------------------------------------------------------
 | ID                    | CWEs                                       | Parent Database    | Full Path                             |
 |-----------------------|--------------------------------------------|--------------------|---------------------------------------|
-│ nist_c_test_suite_113 │ Use of Externally-Controlled Format String │ nist_c_test_suite  │ executables/nist_c_test_suite_113.elf │
-│ nist_c_test_suite_133 │ Use of Externally-Controlled Format String │ nist_c_test_suite  │ executables/nist_c_test_suite_133.elf │
+| nist_c_test_suite_113 | Use of Externally-Controlled Format String | nist_c_test_suite  | executables/nist_c_test_suite_113.elf |
+| nist_c_test_suite_133 | Use of Externally-Controlled Format String | nist_c_test_suite  | executables/nist_c_test_suite_133.elf |
 [...]
 \end{verbatim}
 \end{tiny}
@@ -68,9 +68,9 @@ The executable details were recorded in a CSV file denominated as
 \begin{itemize}
   \tightlist
   \item
-        \texttt{name}: Unique identifier of a program. The format
-        \texttt{executables/\textless{}name\textgreater{}.elf} is utilized to
-        determine the path of the executable file.
+        \texttt{name}: Unique identifier of a program, the format
+        \texttt{executables/\textless{}name\textgreater{}.elf} being utilized to
+        determine the path of the executable file;
   \item
         \texttt{cwes}: One or more CWEs that are present in the executable;
         and
@@ -80,9 +80,10 @@ The executable details were recorded in a CSV file denominated as
 
 Finally, it is noteworthy that the employed test suites do not conform to a
 consistent distribution of executables across each vulnerability type, as
-identified by the Common Weakness Enumeration (CWE) ID.
+identified by the CWE ID.
 
 \begin{table}[]
+\centering
 \begin{tabular}{|l|l|}
 \hline
 Weakness                                   & Count \\ \hline
@@ -97,6 +98,7 @@ Buffer Underflow                           & 2048  \\ \hline
 Buffer Under-read                          & 2048  \\ \hline
 OS Command Injection                       & 1921  \\ \hline
 \end{tabular}
+\caption{\label{executables-distribution}Distribution of Vulnerable Executables, by CWE}
 \end{table}
 
 \hypertarget{arguments-dictionaries-generation}{%
@@ -114,15 +116,15 @@ employed for the purpose of argument fuzzing:
   \tightlist
   \item
         \texttt{generation}: \texttt{62} entries with arguments like
-        \texttt{-a}, \texttt{-D}, and \texttt{-9}
+        \texttt{-a}, \texttt{-D}, and \texttt{-9};
   \item
         \texttt{man\_parsing}: \texttt{6701} entries with arguments like
         \texttt{-\/-ascii}, \texttt{-\/-cert-status}, and \\
-        \texttt{-\/-message-id}
+        \texttt{-\/-message-id}; and
   \item
         \texttt{binary\_pattern\_matching} for \texttt{/usr/bin/uname}:
-        \texttt{37} enties with arguments like \\ \texttt{-\/-processor}, \texttt{-\/-operating-system}, and \texttt{-linux-x86-64}. As evident from the
-        observation, the precision is not unitary since not all the strings
+        \texttt{37} entries with arguments like \\ \texttt{-\/-processor}, \texttt{-\/-operating-system}, and \texttt{-linux-x86-64}. As evident from the
+        list, the precision is not unitary since not all the strings
         returned are valid arguments. This phenomenon occurs due to the
         adherence of certain character sequences within the binary files to
         the regular expression pattern for arguments. However, this does not
@@ -158,11 +160,11 @@ Several arguments were detected for the given program:
 -----------------------------------------------
 | Argument                   |      Role      |
 |----------------------------|----------------|
-│ -                          │      FLAG      │
-│ --all                      │      FLAG      │
-│ --all string               │ STRING_ENABLER │
-│ --hardware-platform        │      FLAG      │
-│ --hardware-platform string │ STRING_ENABLER │
+| -                          |      FLAG      |
+| --all                      |      FLAG      |
+| --all string               |      STRING      |
+| --hardware-platform        |      FLAG      |
+| --hardware-platform string | STRING_ENABLER |
 [...]
 \end{verbatim}
 \end{tiny}
@@ -175,9 +177,9 @@ two roles: \texttt{FLAG} (valid since they activate functionality) and
 \texttt{STRING\_ENABLER} (invalid because they do not require the user
 to give any string after that). Upon examining the outcomes produced by
 QBDI, it can be inferred that the reason for this occurrence is due to
-the fact that the DJB2 hash generated for \texttt{-a}
-(i.e.~\texttt{-939574273}) and for
-\texttt{-a\ \textless{}string\textgreater{}} (i.e.~\texttt{657648750})
+the fact that the DJB2 hash generated for \texttt{<param>}
+(e.g. ~\texttt{-939574273} for \texttt{-a}) and for
+\texttt{<param>\ \textless{}string\textgreater{}} (e.g. ~\texttt{657648750} for \texttt{-a <string>})
 are different.
 
 Conversely, the hyphen symbol (\texttt{-}) does not constitute a legitimate
@@ -214,26 +216,28 @@ Several input mechanisms were detected for the given program:
 ----------------------------------
 | Stream               | Present |
 |----------------------|---------|
-│ STDIN                │   No    │
-│ ARGUMENTS            │   Yes   │
-│ FILES                │   No    │
-│ ENVIRONMENT_VARIABLE │   No    │
-│ NETWORKING           │   No    │
-└──────────────────────┴─────────┘
+| STDIN                |   No    |
+| ARGUMENTS            |   Yes   |
+| FILES                |   No    |
+| ENVIRONMENT_VARIABLE |   No    |
+| NETWORKING           |   No    |
+----------------------------------
 \end{verbatim}
 \end{tiny}
 
-The following table presents a summary of the outcomes.
+Table \ref{executables-distribution} presents a summary of the outcomes.
 
 \begin{table}[]
+\centering
 \begin{tabular}{|l|l|l|l|}
 \hline
 Executable                      & Arguments Stream & Files Stream  & stdin Stream  \\ \hline
-null\_pointer\_deref\_args.elf  & Detected (TP)    & N/A           & N/A           \\ \hline
-null\_pointer\_deref\_files.elf & Detected (TP)    & Detected (TP) & Detected (FP) \\ \hline
-null\_pointer\_deref\_stdin.elf & Detected (TP)    & Detected (FP) & N/A           \\ \hline
-multiple\_inputs\_streams.elf   & Detected (TP)    & Detected (TP) & Detected (TP) \\ \hline
+\texttt{null\_pointer\_deref\_args.elf}  & Detected (TP)    & N/A           & N/A           \\ \hline
+\texttt{null\_pointer\_deref\_files.elf} & Detected (TP)    & Detected (TP) & Detected (FP) \\ \hline
+\texttt{null\_pointer\_deref\_stdin.elf} & Detected (TP)    & Detected (FP) & N/A           \\ \hline
+\texttt{multiple\_inputs\_streams.elf}   & Detected (TP)    & Detected (TP) & Detected (TP) \\ \hline
 \end{tabular}
+\caption{\label{executables-distribution}Accuracy in Detecting the Input Streams}
 \end{table}
 
 In two programs, the file and \texttt{stdin} streams were wrongly recognized as
@@ -317,6 +321,5 @@ The exploiter could generate an exploit with the outcome of SHELL and the follow
 [...]
 \end{verbatim}
 \end{tiny}
-
 
 \end{document}
