@@ -1,0 +1,102 @@
+\section{Testing and Assessment}
+
+\begin{frame}
+    \begin{table}[]
+        \begin{tabular}{|l|l|}
+            \hline
+            Heuristic                                 & Arguments Count \\ \hline
+            Generation                                & 62              \\ \hline
+            Manuals' parsing                          & 6701            \\ \hline
+            Binary pattern matching on \texttt{uname} & 37              \\ \hline
+        \end{tabular}
+        \caption{Arguments Dictionaries, by Heuristic}
+    \end{table} \pause
+
+    \begin{table}[]
+        \begin{tabular}{|l|l|l|l|}
+            \hline
+            Executable                               & Arguments Stream & Files Stream  & stdin Stream  \\ \hline
+            \texttt{null\_pointer\_deref\_args.elf}  & Detected (TP)    & N/A           & N/A           \\ \hline
+            \texttt{null\_pointer\_deref\_files.elf} & Detected (TP)    & Detected (TP) & Detected (FP) \\ \hline
+            \texttt{null\_pointer\_deref\_stdin.elf} & Detected (TP)    & Detected (FP) & N/A           \\ \hline
+            \texttt{multiple\_inputs\_streams.elf}   & Detected (TP)    & Detected (TP) & Detected (TP) \\ \hline
+        \end{tabular}
+        \caption{\label{executables-distribution}Accuracy in Detecting the Input Streams}
+    \end{table}
+\end{frame}
+
+\begin{frame}[fragile]
+    \begin{figure}[!ht]
+        \centering
+        \tiny
+        \begin{minipage}{0.7\textwidth}
+            \begin{minted}{bash}
+$ opencrs-surface fuzz --elf /bin/uname --dictionary uname.dict
+Several arguments were detected for the given program:
+
+|----------------------------|
+| Argument  |      Role      |
+|----------------------------|
+| -         |      FLAG      |
+| -a        |      FLAG      |
+| -a string | STRING_ENABLER |
+| -i        |      FLAG      |
+| -i string | STRING_ENABLER |
+| -m        |      FLAG      |
+| -m string | STRING_ENABLER |
+| -n        |      FLAG      |
+| -n string | STRING_ENABLER |
+| -o        |      FLAG      |
+| -o string | STRING_ENABLER |
+| -p        |      FLAG      |
+| -p string | STRING_ENABLER |
+| -r        |      FLAG      |
+| -r string | STRING_ENABLER |
+| -s        |      FLAG      |
+| -s string | STRING_ENABLER |
+| -v        |      FLAG      |
+| -v string | STRING_ENABLER |
+|----------------------------|
+    \end{minted}
+        \end{minipage}
+        \caption{Arguments Fuzzing for \texttt{/bin/uname}}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \begin{table}[]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            Weakness                                   & Count \\ \hline
+            Stack-based Buffer Overflow                & 13836 \\ \hline
+            Heap-based Buffer Overflow                 & 11088 \\ \hline
+            Integer Overflow or Wraparound             & 3960  \\ \hline
+            Mismatched Memory Management Routines      & 3564  \\ \hline
+            Integer Underflow                          & 2952  \\ \hline
+            Free of Memory not on the Heap             & 2680  \\ \hline
+            Use of Externally-Controlled Format String & 2410  \\ \hline
+            Buffer Underflow                           & 2048  \\ \hline
+            Buffer Under-read                          & 2048  \\ \hline
+            OS Command Injection                       & 1921  \\ \hline
+        \end{tabular}
+        \caption{\label{executables-distribution}Executables in \texttt{opencrs\_dataset}\footnote{\href{https://github.com/CyberReasoningSystem/opencrs_dataset}{https://github.com/CyberReasoningSystem/opencrs\_dataset}}, by CWE}
+    \end{table}
+
+\end{frame}
+
+\begin{frame}{Other Results}
+    \begin{itemize}
+        \item Successful vulnerability discovery
+              \begin{itemize}
+                  \item Different input streams
+                  \item Different vulnerabilities
+                        \begin{itemize}
+                            \item \color{gray} Tainted format string
+                            \item \color{gray} NULL pointer dereferencing
+                            \item \color{gray} Stack buffer overflow
+                        \end{itemize}
+              \end{itemize} \pause
+        \item Three executables for which exploits were generated
+    \end{itemize}
+\end{frame}

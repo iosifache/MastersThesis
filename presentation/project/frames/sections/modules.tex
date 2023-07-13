@@ -1,0 +1,94 @@
+\section{Modules}
+
+\begin{frame}{The Attack Surface Approximation Module}
+    \begin{figure}
+        \centering
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/qbdi.png}}
+        \hspace{1em}
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/ghidra.png}}
+        \hspace{1em}
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/python.png}}
+        \hspace{1em}
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/docker.png}}
+    \end{figure}
+    \vfill
+    \pause
+
+    \begin{itemize}
+        \item Discovery of input streams' indicators
+              \begin{itemize}
+                  \item Decompilation and AST parsing
+                  \item Imported functions' bucketing \pause
+              \end{itemize}
+        \item Generation of dictionaries with heuristics\pause
+        \item Arguments discovery and role attachment
+              \begin{itemize}
+                  \item Execution tracing
+                  \item Monitoring of file openings
+              \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{The Vulnerability Detection Module}
+    \begin{figure}
+        \centering
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/aflpp.png}}
+        \hspace{1em}
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/qemu.png}}
+        \hspace{1em}
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/c.png}}
+        \hspace{1em}
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/python.png}}
+        \hspace{1em}
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/docker.png}}
+    \end{figure}
+    \vfill
+    \pause
+
+    \begin{itemize}
+        \item Detector recommendation\pause
+        \item Fuzzing with afl++
+              \begin{itemize}
+                  \item Already-implemented for files and \texttt{stdin}
+                  \item With custom harness for arguments \pause
+              \end{itemize}
+        \item Emulation
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}{The Automatic Exploit Generation Module}
+    \begin{figure}
+        \centering
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/python.png}}
+        \hspace{1em}
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/docker.png}}
+    \end{figure}
+    \vfill
+    \pause
+
+    \begin{itemize}
+        \item Exploiter recommendation\pause
+        \item BoF exploitation with forked \textbf{Zeratool}\pause
+        \item Mitigations bypass
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{The Dataset Module}
+    \begin{figure}
+        \centering
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/gcc.png}}
+        \hspace{1em}
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/python.png}}
+        \hspace{1em}
+        \subfigure{\includegraphics[width=0.05\textwidth]{images/docker.png}}
+    \end{figure}
+    \vfill
+    \pause
+
+    \begin{itemize}
+        \item Three integrated test suites\pause
+        \item Automatic building by test suite parsing\pause
+        \item Dataset querying, with filter
+    \end{itemize}
+\end{frame}
